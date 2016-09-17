@@ -14,7 +14,7 @@ This code has been tested with KotahiNet in New Zealand. It should be able to be
 ### Software
 
 - [Download and Install the Arduino IDE](https://www.arduino.cc/en/Main/Software)
-- [Import the Adafruit] boards(https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/setup)
+- [Import the Adafruit boards](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/setup)
 - [elapsedMillis](https://github.com/pfeerick/elapsedMillis) Library
 - [LoRa-LMIC-1.51](https://github.com/mikenz/LoRa-LMIC-1.51) Library
 
