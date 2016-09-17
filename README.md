@@ -3,11 +3,13 @@ Example Arduino code of using an Adafruit Feather M0 LoRa module to send sensor 
 
 This code has been tested with KotahiNet in New Zealand. It should be able to be used on any LoraWAN network with a little [modification to the frequency plan](https://github.com/mikenz/LoRa-LMIC-1.51/blob/master/src/lmic/config.h#L5).
 
+Where possible I have included links to New Zealand suppliers of components. My go to is [nicegear](https://nicegear.co.nz/), followed by  [MindKits](http://www.mindkits.co.nz/). Jaycar Electronics have a range of sensors but they're more expensive.
+
 ## Things you need
 
 ### Hardware
 
-- [Adafruit Feather M0 with RFM95 LoRa Radio - 900MHz](https://www.adafruit.com/products/3178).
+- [Adafruit Feather M0 with RFM95 LoRa Radio - 900MHz](https://www.adafruit.com/products/3178) [[nicegear](https://nicegear.co.nz/arduino/adafruit-feather-m0-with-rfm95-lora-radio-900mhz/)]
 - (optional) BMP085/BMP180 Barometric pressure sensor
 - (optional) DHT11/DHT21/DHT22 Humity and Temperature sensor
 
@@ -75,7 +77,8 @@ Then Upload the code to the Feather again.
 
 Easiest is to get a BMP085/BMP180 breakbout board
 - [Adafruit BMP180 Barometric Pressure/Temperature/Altitude Sensor](https://www.adafruit.com/products/1603)
-- [SparkFun Barometric Pressure Sensor Breakout](https://www.sparkfun.com/products/11824)
+- [SparkFun Barometric Pressure Sensor Breakout](https://www.sparkfun.com/products/11824) [[nicegear](https://nicegear.co.nz/sensors/barometric-pressure-sensor-bmp180-breakout/)]
+- Generic breakout [[Mindkits](http://www.mindkits.co.nz/store/p/9195-BMP180-Barometer-Pressure/Temperature/Altitude-Sensor.aspx)]
 
 And connect it up
 ![BMP085/BMP180 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/BMP085-BMP180_bb.png)
@@ -98,8 +101,11 @@ Then Upload the code to the Feather again.
 
 #### Hardware
 
-- DHT11 or DHT22 [[Adafruit](https://www.adafruit.com/products/385)] [[Sparkfun](https://www.sparkfun.com/products/10167)]
+- DHT11 or DHT22 [[Adafruit](https://www.adafruit.com/products/385)] [[Sparkfun](https://www.sparkfun.com/products/10167)] [[nicegear](https://nicegear.co.nz/sensors/humidity-and-temperature-sensor-dht22/)] [[MindKits](http://www.mindkits.co.nz/store/p/8352-Humidity-and-Temperature-Sensor-DHT22.aspx)]
 - 4.7K - 10K resistor
+
+Or a breakout board that has the resistor included
+- [Freetronics Humidity / Temperature Sensor Module](http://www.freetronics.com.au/products/humidity-and-temperature-sensor-module) [[nicegear](https://nicegear.co.nz/sensors/freetronics-humidity-and-temperature-sensor-module/)]
 
 And connect it up
 ![DHT11/DHT22 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/DHT11-DHT22_bb.png)
