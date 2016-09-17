@@ -15,7 +15,7 @@ This code has been tested with KotahiNet in New Zealand. It should be able to be
 
 - [Download and Install the Arduino IDE](https://www.arduino.cc/en/Main/Software)
 - [Import the Adafruit boards](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/setup)
-- Install the [elapsedMillis](https://github.com/pfeerick/elapsedMillis) Library
+- Install the [elapsedMillis](https://github.com/pfeerick/elapsedMillis) Library ([Adafruit All About Arduino Libraries](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use))
 - Install my fork of the [LoRa-LMIC-1.51](https://github.com/mikenz/LoRa-LMIC-1.51) Library
 
 ## Sending your first message
@@ -81,6 +81,9 @@ And connect it up
 ![BMP085/BMP180 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/BMP085-BMP180_bb.png)
 
 #### Software
+
+- Install the [Adafrut_Sensor](https://github.com/adafruit/Adafruit_Sensor) library
+- Install the [Adafruit_BMP085_Unified](https://github.com/adafruit/Adafruit_BMP085_Unified) library
 
 Remove the comments infront of the sensor you have, eg
 
