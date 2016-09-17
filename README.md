@@ -82,23 +82,41 @@ And connect it up
 
 #### Software
 
-- Install the [Adafrut_Sensor](https://github.com/adafruit/Adafruit_Sensor) library
+- Install the [Adafruit Unified Sensor Library](https://github.com/adafruit/Adafruit_Sensor) library
 - Install the [Adafruit_BMP085_Unified](https://github.com/adafruit/Adafruit_BMP085_Unified) library
 
 Remove the comments infront of the sensor you have, eg
 
 ```Arduino
-/**
- * Sensors to enable
- * Uncomment the sensors you want to use
- */
-#define SENSOR_FEATHER_BATTERY  // Battery Voltage
-#define SENSOR_FEATHER_MEMORY   // Free memory
-//#define SENSOR_DHT11            // DHT 11
-//#define SENSOR_DHT21            // DHT 21 (AM2301)
-//#define SENSOR_DHT22            // DHT 22 (AM2302)
 //#define SENSOR_BMP085             // BMP085
 #define SENSOR_BMP180             // BMP180
 ```
 
 Then Upload the code to the Feather again.
+
+### Humidity and Temperature
+
+#### Hardware
+
+- DHT11 or DHT22 [Adafruit](https://www.adafruit.com/products/385) [Sparkfun](https://www.sparkfun.com/products/10167)
+- 4.7K - 10K resistor
+
+And connect it up
+![DHT11/DHT22 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/DHT11-DHT22_bb)
+
+#### Software
+
+- Install the [Adafruit Unified Sensor Library](https://github.com/adafruit/Adafruit_Sensor) library
+- Install the [Adafruit DHT Humidity & Temperature Unified Sensor](https://github.com/adafruit/Adafruit_DHT_Unified) Library
+- Install the [Adafruit DHT Sensor](https://github.com/adafruit/DHT-sensor-library) Library
+
+Remove the comments infront of the sensor you have, eg
+
+```Arduino
+//#define SENSOR_DHT11            // DHT 11
+//#define SENSOR_DHT21            // DHT 21 (AM2301)
+#define SENSOR_DHT22            // DHT 22 (AM2302)
+```
+
+Then Upload the code to the Feather again.
+
