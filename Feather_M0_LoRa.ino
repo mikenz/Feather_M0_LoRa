@@ -438,7 +438,7 @@ void sendStartupMessage() {
     }
 
     // Put together the data to send
-    char packet[20] = STARTUP_MESSAGE;
+    char packet[41] = STARTUP_MESSAGE;
 
     // Debug message
     Serial.print("  seqno ");
@@ -448,7 +448,7 @@ void sendStartupMessage() {
 
     // Add to the queque
     dataSent = false;
-    uint8_t lmic_packet[20];
+    uint8_t lmic_packet[41];
     strcpy((char *)lmic_packet, packet);
     LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
 
