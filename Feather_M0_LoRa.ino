@@ -28,6 +28,7 @@
 //#define SENSOR_DHT22            // DHT 22 (AM2302)
 //#define SENSOR_BMP085           // BMP085
 //#define SENSOR_BMP180           // BMP180
+//#define SENSOR_TSL2561          // TLS2561
 
 // LoRaWAN Config
 // Device Address
@@ -84,6 +85,15 @@ bool dataSent = false;
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
 #endif
 
+/**
+ * TLS2561
+ */
+#if defined(SENSOR_TSL2561)
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_TSL2561_U.h>
+Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 12345);
+#endif
 
 /**
  * Device Start Up
@@ -112,6 +122,13 @@ void setup() {
     #if defined(SENSOR_BMP085) || defined(SENSOR_BMP180)
         // Initialize the BMP pressure sensor
         bmp.begin();
+    #endif
+
+    #if defined(SENSOR_TSL2561)
+        // Initialize the TSL2561 Digital Luminosity sensor
+        tsl.begin();
+        tsl.enableAutoRange(true);
+        tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_101MS);
     #endif
 
     // LMIC init
@@ -182,6 +199,11 @@ void loop() {
         delay(1000);
     #endif
 
+    #if defined(SENSOR_TSL2561)
+        sendLux();
+        delay(1000);
+    #endif
+
     // Shutdown the radio
     os_radio(RADIO_RST);
 
@@ -198,6 +220,60 @@ void loop() {
     sleep -= sinceWake;
     delay(constrain(sleep, 10000, 60000 * UpdateInterval));
 }
+
+/**
+ * Send a message with the light intensity
+ */
+#if defined(SENSOR_TSL2561)
+void sendLux() {
+    // Ensure there is not a current TX/RX job running
+    if (LMIC.opmode & (1 << 7)) {
+        // Something already in the queque
+        return;
+    }
+
+    // Put together the data to send
+    char packet[40] = "";
+
+    // Get sensor event and print its value.
+    sensors_event_t event;
+    tsl.getEvent(&event);
+    if (event.light) {
+        char floatStr[10];
+        dtostrf(event.light, 3, 2, floatStr);
+        strcat(packet, "Light: ");
+        strcat(packet, floatStr);
+        strcat(packet, " lux");
+    } else {
+        Serial.println("Error reading light intensity!");
+    }
+
+    if (!strlen(packet)) {
+        // Don't send empty packet
+        return;
+    }
+
+    // Debug message
+    Serial.print("  seqno ");
+    Serial.print(LMIC.seqnoUp);
+    Serial.print(": ");
+    Serial.println(packet);
+
+    // Add to the queque
+    dataSent = false;
+    uint8_t lmic_packet[40];
+    strcpy((char *)lmic_packet, packet);
+    LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
+
+    // Wait for the data to send or timeout after 15s
+    elapsedMillis sinceSend = 0;
+    while (!dataSent && sinceSend < 15000) {
+        os_runloop_once();
+        delay(1);
+    }
+    os_runloop_once();
+}
+#endif
 
 /**
  * Send a message with the temperature and humidity

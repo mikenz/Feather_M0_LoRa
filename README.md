@@ -88,7 +88,7 @@ And connect it up
 - Install the [Adafruit Unified Sensor Library](https://github.com/adafruit/Adafruit_Sensor) library
 - Install the [Adafruit_BMP085_Unified](https://github.com/adafruit/Adafruit_BMP085_Unified) library
 
-Remove the comments infront of the sensor you have, eg
+Remove the comments in front of the sensor you have, eg
 
 ```Arduino
 //#define SENSOR_BMP085             // BMP085
@@ -116,7 +116,7 @@ And connect it up
 - Install the [Adafruit DHT Humidity & Temperature Unified Sensor](https://github.com/adafruit/Adafruit_DHT_Unified) Library
 - Install the [Adafruit DHT Sensor](https://github.com/adafruit/DHT-sensor-library) Library
 
-Remove the comments infront of the sensor you have, eg
+Remove the comments in front of the sensor you have, eg
 
 ```Arduino
 //#define SENSOR_DHT11            // DHT 11
@@ -126,3 +126,29 @@ Remove the comments infront of the sensor you have, eg
 
 Then Upload the code to the Feather again.
 
+
+### Light Intensity (TSL2561 sensor)
+
+#### Hardware
+
+- [Adafruit TSL2561 Digital Luminosity/Lux/Light Sensor Breakout](https://www.adafruit.com/product/439)
+- [SparkFun Luminosity Sensor Breakout - TSL2561
+](https://www.sparkfun.com/products/12055) [[nicegear](https://nicegear.co.nz/sensors/tsl2561-luminosity-sensor-breakout/)]
+[[MindKits](http://www.mindkits.co.nz/store/p/8421-TSL2561-Luminosity-Sensor-Breakout.aspx)]
+- Generic breakout [[MindKits](http://www.mindkits.co.nz/store/p/9263-Luminosity-Sensor-TSL2561-Breakout.aspx)]
+
+And connect it up
+![TLS2561  wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/TLS2561_bb.png)
+
+#### Software
+
+- Install the [Adafruit Unified Sensor Library](https://github.com/adafruit/Adafruit_Sensor) library
+- Install the [Adafruit TSL2561 Light Sensor Driver](https://github.com/adafruit/Adafruit_TSL2561) Library
+
+Remove the comments in front of the sensor you have, eg
+
+```Arduino
+#define SENSOR_TSL2561          // TLS2561
+```
+
+Then Upload the code to the Feather again.
