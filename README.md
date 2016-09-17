@@ -178,3 +178,34 @@ Remove the comments in front of the sensor you have, eg
 ```
 
 Then Upload the code to the Feather again.
+
+
+### Temperature (DS18B20 sensor)
+
+#### Hardware
+
+- DS18B20 [[Adafruit](https://www.adafruit.com/products/374)]
+[[SparkFun](https://www.sparkfun.com/products/245)] [[nicegear](https://nicegear.co.nz/sensors/one-wire-digital-temperature-sensor-ds18b20/)] [[MindKits](http://www.mindkits.co.nz/store/p/9303-DS18B20-Temperature-Sensor.aspx)]
+- Waterproof DS18B20 Digital temperature sensor [[Adafruit](https://www.adafruit.com/products/381)] [[SparkFun](https://www.sparkfun.com/products/11050)] [[nicegear](https://nicegear.co.nz/sensors/temperature-sensor-waterproof-ds18b20/)] [[MindKits](http://www.mindkits.co.nz/store/p/9156-One-Wire-Waterproof-Temperature-Sensor.aspx)]
+- [High Temp Waterproof DS18B20 Digital temperature sensor](https://www.adafruit.com/products/642) [[nicegear](https://nicegear.co.nz/sensors/high-temp-waterproof-ds18b20-digital-temperature-sensor/)]
+- and 4.7k Resistor
+
+Or a breakout board that has the resistor included
+- [Freetronics Temperature Sensor Module](http://www.freetronics.com.au/products/temperature-sensor-module) [[nicegear](https://nicegear.co.nz/sensors/freetronics-temperature-sensor-module/)]
+
+And connect it up
+![DS18B20  wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/DS18B20_bb.png)
+
+
+#### Software
+
+- Install the [OneWire](https://github.com/PaulStoffregen/OneWire) library
+- Install the [Arduino Temperature Control](https://github.com/milesburton/Arduino-Temperature-Control-Library) library
+
+Remove the comments in front of the sensor you have, eg
+
+```Arduino
+#define SENSOR_DS18B20         // DS18B20
+```
+
+Then Upload the code to the Feather again.

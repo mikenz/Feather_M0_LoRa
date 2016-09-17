@@ -30,6 +30,7 @@
 //#define SENSOR_BMP180           // BMP180
 //#define SENSOR_TSL2561          // TLS2561
 //#define SENSOR_BH1750          // BH1750FVI
+//#define SENSOR_DS18B20          // DS18B20
 
 // LoRaWAN Config
 // Device Address
@@ -104,6 +105,14 @@ Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 1234
 #define _delay_ms(ms) delayMicroseconds((ms) * 1000)
 #include <BH1750.h>
 BH1750 bh1750;
+#endif
+
+/**
+ * DS18B20 temperature sensor
+ */
+#if defined(SENSOR_DS18B20)
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #endif
 
 /**
@@ -215,8 +224,15 @@ void loop() {
         delay(1000);
     #endif
 
+    // Send Light Intensity
     #if defined(SENSOR_TSL2561) || defined(SENSOR_BH1750)
         sendLux();
+        delay(1000);
+    #endif
+
+    // Send Temperature
+    #if defined(SENSOR_DS18B20)
+        sendTemperature();
         delay(1000);
     #endif
 
@@ -284,6 +300,58 @@ void sendLux() {
         // Don't send empty packet
         return;
     }
+
+    // Debug message
+    Serial.print("  seqno ");
+    Serial.print(LMIC.seqnoUp);
+    Serial.print(": ");
+    Serial.println(packet);
+
+    // Add to the queque
+    dataSent = false;
+    uint8_t lmic_packet[40];
+    strcpy((char *)lmic_packet, packet);
+    LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
+
+    // Wait for the data to send or timeout after 15s
+    elapsedMillis sinceSend = 0;
+    while (!dataSent && sinceSend < 15000) {
+        os_runloop_once();
+        delay(1);
+    }
+    os_runloop_once();
+}
+#endif
+
+/**
+ * Send a message with the temperature
+ */
+#if defined(SENSOR_DS18B20)
+void sendTemperature() {
+    // Ensure there is not a current TX/RX job running
+    if (LMIC.opmode & (1 << 7)) {
+        // Something already in the queque
+        return;
+    }
+
+    // Put together the data to send
+    char packet[40] = "Temperature: ";
+
+    // Setup the one wire connection on pin 10
+    OneWire oneWire(10);
+    DallasTemperature sensors(&oneWire);
+    DeviceAddress thermometer;
+
+    // Get the temp
+    sensors.begin();
+    sensors.getAddress(thermometer, 0);
+    sensors.setResolution(thermometer, 12);
+    sensors.requestTemperatures();
+    float temp = sensors.getTempC(thermometer);
+    char floatStr[10];
+    dtostrf(temp, 3, 2, floatStr);
+    strcat(packet, floatStr);
+    strcat(packet, "*C");
 
     // Debug message
     Serial.print("  seqno ");
