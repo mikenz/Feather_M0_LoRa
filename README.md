@@ -98,11 +98,11 @@ Then Upload the code to the Feather again.
 
 #### Hardware
 
-- DHT11 or DHT22 [Adafruit](https://www.adafruit.com/products/385) [Sparkfun](https://www.sparkfun.com/products/10167)
+- DHT11 or DHT22 [[Adafruit](https://www.adafruit.com/products/385)] [[Sparkfun](https://www.sparkfun.com/products/10167)]
 - 4.7K - 10K resistor
 
 And connect it up
-![DHT11/DHT22 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/DHT11-DHT22_bb)
+![DHT11/DHT22 wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/DHT11-DHT22_bb.png)
 
 #### Software
 
