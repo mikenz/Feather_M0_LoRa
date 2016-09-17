@@ -26,8 +26,8 @@
 //#define SENSOR_DHT11            // DHT 11
 //#define SENSOR_DHT21            // DHT 21 (AM2301)
 //#define SENSOR_DHT22            // DHT 22 (AM2302)
-//#define SENSOR_BMP085             // BMP085
-//#define SENSOR_BMP180             // BMP180
+//#define SENSOR_BMP085           // BMP085
+//#define SENSOR_BMP180           // BMP180
 
 // LoRaWAN Config
 // Device Address
