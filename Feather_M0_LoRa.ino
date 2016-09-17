@@ -29,6 +29,7 @@
 //#define SENSOR_BMP085           // BMP085
 //#define SENSOR_BMP180           // BMP180
 //#define SENSOR_TSL2561          // TLS2561
+//#define SENSOR_BH1750          // BH1750FVI
 
 // LoRaWAN Config
 // Device Address
@@ -96,6 +97,16 @@ Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 1234
 #endif
 
 /**
+ * BH1750
+ */
+#if defined(SENSOR_BH1750)
+#include <Wire.h>
+#define _delay_ms(ms) delayMicroseconds((ms) * 1000)
+#include <BH1750.h>
+BH1750 bh1750;
+#endif
+
+/**
  * Device Start Up
  */
 void setup() {
@@ -129,6 +140,11 @@ void setup() {
         tsl.begin();
         tsl.enableAutoRange(true);
         tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_101MS);
+    #endif
+
+    #if defined(SENSOR_BH1750)
+        bh1750.begin(BH1750_CONTINUOUS_HIGH_RES_MODE_2);
+        sensorReady = max(sensorReady, 1000 + sinceStart);
     #endif
 
     // LMIC init
@@ -199,7 +215,7 @@ void loop() {
         delay(1000);
     #endif
 
-    #if defined(SENSOR_TSL2561)
+    #if defined(SENSOR_TSL2561) || defined(SENSOR_BH1750)
         sendLux();
         delay(1000);
     #endif
@@ -224,7 +240,7 @@ void loop() {
 /**
  * Send a message with the light intensity
  */
-#if defined(SENSOR_TSL2561)
+#if defined(SENSOR_TSL2561) || defined(SENSOR_BH1750)
 void sendLux() {
     // Ensure there is not a current TX/RX job running
     if (LMIC.opmode & (1 << 7)) {
@@ -235,6 +251,7 @@ void sendLux() {
     // Put together the data to send
     char packet[40] = "";
 
+    #if defined(SENSOR_TSL2561)
     // Get sensor event and print its value.
     sensors_event_t event;
     tsl.getEvent(&event);
@@ -243,10 +260,25 @@ void sendLux() {
         dtostrf(event.light, 3, 2, floatStr);
         strcat(packet, "Light: ");
         strcat(packet, floatStr);
+            #if defined(SENSOR_BH1750)
+                strcat(packet, " lux\n");
+            #else
         strcat(packet, " lux");
+            #endif
     } else {
         Serial.println("Error reading light intensity!");
     }
+    #endif
+
+    #if defined(SENSOR_BH1750)
+        // Get the BH1750 value
+        uint16_t lux = bh1750.readLightLevel();
+        char floatStr[10];
+        dtostrf((float)lux, 3, 2, floatStr);
+        strcat(packet, "Light: ");
+        strcat(packet, floatStr);
+        strcat(packet, " lux");
+    #endif
 
     if (!strlen(packet)) {
         // Don't send empty packet

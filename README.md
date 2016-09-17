@@ -152,3 +152,27 @@ Remove the comments in front of the sensor you have, eg
 ```
 
 Then Upload the code to the Feather again.
+
+
+### Light Intensity (BH1750FVI sensor)
+
+#### Hardware
+
+- [GY-302 Digital Light Intensity Sensor Module](https://www.aliexpress.com/wholesale?SearchText=gy-302)
+- Generic breakout [[MindKits](http://www.mindkits.co.nz/store/p/9194-Digital-Light-Sensor-BH1750FVI.aspx)]
+
+And connect it up
+![BH1750  wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/BH1750_bb.png)
+
+
+#### Software
+
+- Install the [BH1750](https://github.com/kmaximv/BH1750) library
+
+Remove the comments in front of the sensor you have, eg
+
+```Arduino
+#define SENSOR_BH1750          // BH1750FVI
+```
+
+Then Upload the code to the Feather again.
