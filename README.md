@@ -10,8 +10,8 @@ Where possible I have included links to New Zealand suppliers of components. My 
 ### Hardware
 
 - [Adafruit Feather M0 with RFM95 LoRa Radio - 900MHz](https://www.adafruit.com/products/3178) [[nicegear](https://nicegear.co.nz/arduino/adafruit-feather-m0-with-rfm95-lora-radio-900mhz/)]
-- (optional) BMP085/BMP180 Barometric pressure sensor
-- (optional) DHT11/DHT21/DHT22 Humity and Temperature sensor
+- (optional) BMP085/BMP180/BMP280/BME280 Barometric pressure sensor
+- (optional) DHT11/DHT21/DHT22 Humidity and Temperature sensor
 - (optional) TSL2561 Light Intensity sensor
 - (optional) BH1750FVI Light Intensity sensor
 
@@ -77,7 +77,9 @@ Then Upload the code to the Feather again.
 
 #### Hardware
 
-Easiest is to get a BMP085/BMP180 breakbout board
+Easiest is to get a BMP085/BMP180/BMP280/BME280 breakbout board
+- [Adafruit BME280 I2C or SPI Temperature Humidity Pressure Sensor](https://www.adafruit.com/product/2652) [[nicegear](https://nicegear.co.nz/sensors/adafruit-bme280-i2c-or-spi-temperature-humidity-pressure-sensor/)]
+- [Adafruit BMP280 I2C or SPI Barometric Pressure & Altitude Sensor](https://www.adafruit.com/products/2651) [[nicegear](https://nicegear.co.nz/sensors/adafruit-bmp280-i2c-or-spi-barometric-pressure-altitude-sensor/)]
 - [Adafruit BMP180 Barometric Pressure/Temperature/Altitude Sensor](https://www.adafruit.com/products/1603)
 - or [SparkFun Barometric Pressure Sensor Breakout](https://www.sparkfun.com/products/11824) [[nicegear](https://nicegear.co.nz/sensors/barometric-pressure-sensor-bmp180-breakout/)]
 - or Generic breakout [[Mindkits](http://www.mindkits.co.nz/store/p/9195-BMP180-Barometer-Pressure/Temperature/Altitude-Sensor.aspx)]
@@ -88,13 +90,17 @@ And connect it up
 #### Software
 
 - Install the [Adafruit Unified Sensor Library](https://github.com/adafruit/Adafruit_Sensor) library
+- Install the [Adafruit_BME280](https://github.com/adafruit/Adafruit_BME280_Library) library
+- Install the [Adafruit_BMP280](https://github.com/adafruit/Adafruit_BMP280_Library) library
 - Install the [Adafruit_BMP085_Unified](https://github.com/adafruit/Adafruit_BMP085_Unified) library
 
 Remove the comments in front of the sensor you have, eg
 
 ```Arduino
-//#define SENSOR_BMP085             // BMP085
-#define SENSOR_BMP180             // BMP180
+//#define SENSOR_BMP085           // BMP085
+//#define SENSOR_BMP180           // BMP180
+//#define SENSOR_BMP280           // BMP280
+#define SENSOR_BME280           // BME280
 ```
 
 Then Upload the code to the Feather again.
@@ -187,7 +193,7 @@ Then Upload the code to the Feather again.
 - DS18B20 [[Adafruit](https://www.adafruit.com/products/374)]
 [[SparkFun](https://www.sparkfun.com/products/245)] [[nicegear](https://nicegear.co.nz/sensors/one-wire-digital-temperature-sensor-ds18b20/)] [[MindKits](http://www.mindkits.co.nz/store/p/9303-DS18B20-Temperature-Sensor.aspx)]
 - Waterproof DS18B20 Digital temperature sensor [[Adafruit](https://www.adafruit.com/products/381)] [[SparkFun](https://www.sparkfun.com/products/11050)] [[nicegear](https://nicegear.co.nz/sensors/temperature-sensor-waterproof-ds18b20/)] [[MindKits](http://www.mindkits.co.nz/store/p/9156-One-Wire-Waterproof-Temperature-Sensor.aspx)]
-- [High Temp Waterproof DS18B20 Digital temperature sensor](https://www.adafruit.com/products/642) [[nicegear](https://nicegear.co.nz/sensors/high-temp-waterproof-ds18b20-digital-temperature-sensor/)]
+- [Adafruit High Temp Waterproof DS18B20 Digital temperature sensor](https://www.adafruit.com/products/642) [[nicegear](https://nicegear.co.nz/sensors/high-temp-waterproof-ds18b20-digital-temperature-sensor/)]
 - and 4.7k Resistor
 
 Or a breakout board that has the resistor included
