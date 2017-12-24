@@ -31,8 +31,9 @@
 //#define SENSOR_BMP280           // BMP280
 //#define SENSOR_BME280           // BME280
 //#define SENSOR_TSL2561          // TLS2561
-//#define SENSOR_BH1750          // BH1750FVI
+//#define SENSOR_BH1750           // BH1750FVI
 //#define SENSOR_DS18B20          // DS18B20
+//#define SENSOR_SR04PLUS         // HC-SR04+
 
 // LoRaWAN Config
 // Device Address
@@ -50,12 +51,12 @@ unsigned char AppSkey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x
  *****/
 // Feather M0 RFM9x pin mappings
 lmic_pinmap pins = {
-  .nss = 8,			    // Internal connected
-  .rxen = 0, 			// Not used for RFM92/RFM95
-  .txen = 0, 			// Not used for RFM92/RFM95
-  .rst = 4,  			// Internal connected
-  .dio = {3, 5, 6},		// Connect "i01" to "5"
-                        // Connect "D2" to "6"
+  .nss = 8,                // Internal connected
+  .rxen = 0,               // Not used for RFM92/RFM95
+  .txen = 0,               // Not used for RFM92/RFM95
+  .rst = 4,                // Internal connected
+  .dio = {3, 5, 6},    // Connect "i01" to "5"
+                    // Connect "D2" to "6"
 };
 
 // Track if the current message has finished sending
@@ -126,6 +127,17 @@ BH1750 bh1750;
 #endif
 
 /**
+ * HC-SR04+ ultrasonic distance sensor
+ */
+#if defined(SENSOR_SR04PLUS)
+#include <NewPing.h>
+#define TRIGGER_PIN  12  // pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     11  // pin tied to echo pin on the ultrasonic sensor.
+#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+#endif
+
+/**
  * Device Start Up
  */
 void setup() {
@@ -153,14 +165,14 @@ void setup() {
         // Initialize the BMP pressure sensor
         bmp.begin();
     #endif
-	#if defined(SENSOR_BMP280)
-		// Initialize the BMP280 pressure sensor
-		bmp280.begin();
-	#endif
-	#if defined(SENSOR_BME280)
-		// Initialize the BME280 pressure sensor
-		bme280.begin();
-	#endif
+    #if defined(SENSOR_BMP280)
+        // Initialize the BMP280 pressure sensor
+        bmp280.begin();
+    #endif
+    #if defined(SENSOR_BME280)
+        // Initialize the BME280 pressure sensor
+        bme280.begin();
+    #endif
 
     #if defined(SENSOR_TSL2561)
         // Initialize the TSL2561 Digital Luminosity sensor
@@ -174,8 +186,8 @@ void setup() {
         sensorReady = max(sensorReady, 1000 + sinceStart);
     #endif
 
-	// Setup LoRaWAN state
-	initLoRaWAN();
+    // Setup LoRaWAN state
+    initLoRaWAN();
 
     // Wait for all the sensors to be ready
     if (sensorReady > sinceStart) {
@@ -197,23 +209,23 @@ void setup() {
 }
 
 void initLoRaWAN() {
-	// LMIC init
-	os_init();
+    // LMIC init
+    os_init();
 
-	// Reset the MAC state. Session and pending data transfers will be discarded.
-	LMIC_reset();
+    // Reset the MAC state. Session and pending data transfers will be discarded.
+    LMIC_reset();
 
-	// by joining the network, precomputed session parameters are be provided.
-	LMIC_setSession(0x1, DevAddr, (uint8_t*)NwkSkey, (uint8_t*)AppSkey);
+    // by joining the network, precomputed session parameters are be provided.
+    LMIC_setSession(0x1, DevAddr, (uint8_t*)NwkSkey, (uint8_t*)AppSkey);
 
-	// Enabled data rate adaptation
-	LMIC_setAdrMode(1);
+    // Enabled data rate adaptation
+    LMIC_setAdrMode(1);
 
-	// Enable link check validation
-	LMIC_setLinkCheckMode(0);
+    // Enable link check validation
+    LMIC_setLinkCheckMode(0);
 
-	// Set data rate and transmit power
-	LMIC_setDrTxpow(DR_SF12, 21);
+    // Set data rate and transmit power
+    LMIC_setDrTxpow(DR_SF12, 21);
 }
 
 void loop() {
@@ -246,14 +258,14 @@ void loop() {
         sendBMP();
         delay(1000);
     #endif
-	#if defined(SENSOR_BMP280)
-		sendBMP280();
-		delay(1000);
-	#endif
-	#if defined(SENSOR_BME280)
-		sendBME280();
-		delay(1000);
-	#endif
+    #if defined(SENSOR_BMP280)
+        sendBMP280();
+        delay(1000);
+    #endif
+    #if defined(SENSOR_BME280)
+        sendBME280();
+        delay(1000);
+    #endif
 
     // Send Light Intensity
     #if defined(SENSOR_TSL2561) || defined(SENSOR_BH1750)
@@ -267,6 +279,12 @@ void loop() {
         delay(1000);
     #endif
 
+    // Send Distance in centimeters
+    #if defined(SENSOR_SR04PLUS)
+        sendDistance();
+        delay(1000);
+    #endif
+    
     // Shutdown the radio
     os_radio(RADIO_RST);
 
@@ -283,6 +301,45 @@ void loop() {
     sleep -= sinceWake;
     delay(constrain(sleep, 10000, 60000 * UpdateInterval));
 }
+
+/**
+ * Send a message with the distance
+ */
+#if defined(SENSOR_SR04PLUS)
+void sendDistance() {
+    // Ensure there is not a current TX/RX job running
+    if (LMIC.opmode & (1 << 7)) {
+        // Something already in the queque
+        return;
+    }
+
+    // Get the distance
+    char packet[40] = "";
+    strcat(packet, "Distance: ");
+    strcat(packet, sonar.ping_cm());
+
+
+    // Debug message
+    Serial.print("  seqno ");
+    Serial.print(LMIC.seqnoUp);
+    Serial.print(": ");
+    Serial.println(packet);
+
+    // Add to the queque
+    dataSent = false;
+    uint8_t lmic_packet[40];
+    strcpy((char *)lmic_packet, packet);
+    LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
+
+    // Wait for the data to send or timeout after 15s
+    elapsedMillis sinceSend = 0;
+    while (!dataSent && sinceSend < 15000) {
+        os_runloop_once();
+        delay(1);
+    }
+    os_runloop_once();
+}
+#endif
 
 /**
  * Send a message with the light intensity
@@ -474,134 +531,134 @@ void sendBMP() {
 #endif
 #if defined(SENSOR_BMP280)
 void sendBMP280() {
-	// Ensure there is not a current TX/RX job running
-	if (LMIC.opmode & (1 << 7)) {
-		// Something already in the queque
-		return;
-	}
+    // Ensure there is not a current TX/RX job running
+    if (LMIC.opmode & (1 << 7)) {
+        // Something already in the queque
+        return;
+    }
 
-	// Put together the data to send
-	char packet[40] = "";
+    // Put together the data to send
+    char packet[40] = "";
 
-	// Get temperature event and print its value.
-	float temperature = bmp280.readTemperature();
-	if (temperature) {
-		char floatStr[10];
-		dtostrf(temperature, 3, 2, floatStr);
-		strcat(packet, "Temp: ");
-		strcat(packet, floatStr);
-		strcat(packet, "*C\n");
-	} else {
-		Serial.println("Error reading temperature!");
-	}
+    // Get temperature event and print its value.
+    float temperature = bmp280.readTemperature();
+    if (temperature) {
+        char floatStr[10];
+        dtostrf(temperature, 3, 2, floatStr);
+        strcat(packet, "Temp: ");
+        strcat(packet, floatStr);
+        strcat(packet, "*C\n");
+    } else {
+        Serial.println("Error reading temperature!");
+    }
 
-	// Get pressure event and print its value.
-	float pressure = bmp280.readPressure() / 100.0F;
-	if (pressure) {
-		char floatStr[10];
-		dtostrf(pressure, 3, 2, floatStr);
-		strcat(packet, "Pressure: ");
-		strcat(packet, floatStr);
-		strcat(packet, "hPa");
-	} else {
-		Serial.println("Error reading pressure!");
-	}
+    // Get pressure event and print its value.
+    float pressure = bmp280.readPressure() / 100.0F;
+    if (pressure) {
+        char floatStr[10];
+        dtostrf(pressure, 3, 2, floatStr);
+        strcat(packet, "Pressure: ");
+        strcat(packet, floatStr);
+        strcat(packet, "hPa");
+    } else {
+        Serial.println("Error reading pressure!");
+    }
 
-	if (!strlen(packet)) {
-		// Don't send empty packet
-		return;
-	}
+    if (!strlen(packet)) {
+        // Don't send empty packet
+        return;
+    }
 
-	// Debug message
-	Serial.print("  seqno ");
-	Serial.print(LMIC.seqnoUp);
-	Serial.print(": ");
-	Serial.println(packet);
-	// Add to the queque
-	dataSent = false;
-	uint8_t lmic_packet[40];
-	strcpy((char *)lmic_packet, packet);
-	LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
+    // Debug message
+    Serial.print("  seqno ");
+    Serial.print(LMIC.seqnoUp);
+    Serial.print(": ");
+    Serial.println(packet);
+    // Add to the queque
+    dataSent = false;
+    uint8_t lmic_packet[40];
+    strcpy((char *)lmic_packet, packet);
+    LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
 
-	// Wait for the data to send or timeout after 15s
-	elapsedMillis sinceSend = 0;
-	while (!dataSent && sinceSend < 15000) {
-		os_runloop_once();
-		delay(1);
-	}
-	os_runloop_once();
+    // Wait for the data to send or timeout after 15s
+    elapsedMillis sinceSend = 0;
+    while (!dataSent && sinceSend < 15000) {
+        os_runloop_once();
+        delay(1);
+    }
+    os_runloop_once();
 }
 #endif
 #if defined(SENSOR_BME280)
 void sendBME280() {
-	// Ensure there is not a current TX/RX job running
-	if (LMIC.opmode & (1 << 7)) {
-		// Something already in the queque
-		return;
-	}
+    // Ensure there is not a current TX/RX job running
+    if (LMIC.opmode & (1 << 7)) {
+        // Something already in the queque
+        return;
+    }
 
-	// Put together the data to send
-	char packet[40] = "";
+    // Put together the data to send
+    char packet[40] = "";
 
-	// Get temperature event and print its value.
-	float temperature = bme280.readTemperature();
-	if (temperature) {
-		char floatStr[10];
-		dtostrf(temperature, 3, 2, floatStr);
-		strcat(packet, "Temp: ");
-		strcat(packet, floatStr);
-		strcat(packet, "*C\n");
-	} else {
-		Serial.println("Error reading temperature!");
-	}
+    // Get temperature event and print its value.
+    float temperature = bme280.readTemperature();
+    if (temperature) {
+        char floatStr[10];
+        dtostrf(temperature, 3, 2, floatStr);
+        strcat(packet, "Temp: ");
+        strcat(packet, floatStr);
+        strcat(packet, "*C\n");
+    } else {
+        Serial.println("Error reading temperature!");
+    }
 
-	// Get pressure event and print its value.
-	float pressure = bme280.readPressure() / 100.0F;
-	if (pressure) {
-		char floatStr[10];
-		dtostrf(pressure, 3, 2, floatStr);
-		strcat(packet, "Pressure: ");
-		strcat(packet, floatStr);
-		strcat(packet, "hPa\n");
-	} else {
-		Serial.println("Error reading pressure!");
-	}
+    // Get pressure event and print its value.
+    float pressure = bme280.readPressure() / 100.0F;
+    if (pressure) {
+        char floatStr[10];
+        dtostrf(pressure, 3, 2, floatStr);
+        strcat(packet, "Pressure: ");
+        strcat(packet, floatStr);
+        strcat(packet, "hPa\n");
+    } else {
+        Serial.println("Error reading pressure!");
+    }
 
-	// Get humidity and print its value.
-	float humidity = bme280.readHumidity();
-	if (humidity) {
-		char floatStr[10];
-		dtostrf(pressure, 3, 2, floatStr);
-		strcat(packet, "Humidity: ");
-		strcat(packet, floatStr);
-		strcat(packet, "%");
-	} else {
-		Serial.println("Error reading humidity!");
-	}
+    // Get humidity and print its value.
+    float humidity = bme280.readHumidity();
+    if (humidity) {
+        char floatStr[10];
+        dtostrf(pressure, 3, 2, floatStr);
+        strcat(packet, "Humidity: ");
+        strcat(packet, floatStr);
+        strcat(packet, "%");
+    } else {
+        Serial.println("Error reading humidity!");
+    }
 
-	if (!strlen(packet)) {
-		// Don't send empty packet
-		return;
-	}
+    if (!strlen(packet)) {
+        // Don't send empty packet
+        return;
+    }
 
-	// Debug message
-	Serial.print("  seqno ");
-	Serial.print(LMIC.seqnoUp);
-	Serial.print(": ");
-	Serial.println(packet);
-	// Add to the queque
-	dataSent = false;
-	uint8_t lmic_packet[40];
-	strcpy((char *)lmic_packet, packet);
-	LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
+    // Debug message
+    Serial.print("  seqno ");
+    Serial.print(LMIC.seqnoUp);
+    Serial.print(": ");
+    Serial.println(packet);
+    // Add to the queque
+    dataSent = false;
+    uint8_t lmic_packet[40];
+    strcpy((char *)lmic_packet, packet);
+    LMIC_setTxData2(1, lmic_packet, strlen((char *)lmic_packet), 0);
 
-	// Wait for the data to send or timeout after 15s
-	elapsedMillis sinceSend = 0;
-	while (!dataSent && sinceSend < 15000) {
-		os_runloop_once();
-		delay(1);
-	}
-	os_runloop_once();
+    // Wait for the data to send or timeout after 15s
+    elapsedMillis sinceSend = 0;
+    while (!dataSent && sinceSend < 15000) {
+        os_runloop_once();
+        delay(1);
+    }
+    os_runloop_once();
 }
 #endif
 
@@ -829,7 +886,7 @@ void onEvent (ev_t ev) {
     if (ev == EV_TXCOMPLETE) {
         dataSent = true;
     }
-	if (ev == EV_LINK_DEAD) {
-		initLoRaWAN();
-	}
+    if (ev == EV_LINK_DEAD) {
+        initLoRaWAN();
+    }
 }

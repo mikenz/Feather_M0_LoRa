@@ -14,6 +14,7 @@ Where possible I have included links to New Zealand suppliers of components. My 
 - (optional) DHT11/DHT21/DHT22 Humidity and Temperature sensor
 - (optional) TSL2561 Light Intensity sensor
 - (optional) BH1750FVI Light Intensity sensor
+- (optional) HC-SR04+ Ultrasonic Distance sensor
 
 ### Software
 
@@ -162,30 +163,6 @@ Remove the comments in front of the sensor you have, eg
 Then Upload the code to the Feather again.
 
 
-### Light Intensity (BH1750FVI sensor)
-
-#### Hardware
-
-- [GY-302 Digital Light Intensity Sensor Module](https://www.aliexpress.com/wholesale?SearchText=gy-302)
-- or Generic breakout [[MindKits](http://www.mindkits.co.nz/store/p/9194-Digital-Light-Sensor-BH1750FVI.aspx)]
-
-And connect it up
-![BH1750  wiring](https://github.com/mikenz/Feather_M0_LoRa/raw/master/fritzing/BH1750_bb.png)
-
-
-#### Software
-
-- Install the [BH1750](https://github.com/kmaximv/BH1750) library
-
-Remove the comments in front of the sensor you have, eg
-
-```Arduino
-#define SENSOR_BH1750          // BH1750FVI
-```
-
-Then Upload the code to the Feather again.
-
-
 ### Temperature (DS18B20 sensor)
 
 #### Hardware
@@ -212,6 +189,29 @@ Remove the comments in front of the sensor you have, eg
 
 ```Arduino
 #define SENSOR_DS18B20         // DS18B20
+```
+
+Then Upload the code to the Feather again.
+
+
+### Distance (HC-SR04+ sensor)
+
+#### Hardware
+
+- [Ultrasonic module MC-SR04+ (3.3V/5V version)](https://www.aliexpress.com/item/Ultrasonic-Module-HC-SR04-Distance-Measuring-Transducer-Sensor-HC-SR04-perfect-upgrade-support-3-3V-work/32303225320.html)
+
+And connect it up
+![HC-SR04+  wiring](https://github.com/encodeltd/Feather_M0_LoRa/raw/master/fritzing/HC-SR04plus_bb.png)
+
+
+#### Software
+
+- Install Marek Kuziel's fork of [NewPing](https://gitlab.com/markuz/NewPing-SAMD) Library
+
+Remove the comments in front of the sensor you have, eg
+
+```Arduino
+#define SENSOR_SR04PLUS         // HC-SR04+
 ```
 
 Then Upload the code to the Feather again.
